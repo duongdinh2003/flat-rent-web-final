@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block title %}Edit Property{% endblock title %}
+{% block content %}
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' type='text/css' />
+<div class="page-add-property">
+    <section class="mt-28">
+        <div class="grid grid-cols-5 gap-4">
+
+            <div class="col-span-2 pt-10">
+                <div class="p-20 border border-gray-300 h-full">
+                    <div class="flex flex-col">
+                        <span class="text-xl font-medium">Property Information</span>
+                        <span class="text-gray-500 pt-5">
+                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-3">
+                <div class="flex justify-center items-center p-5"></div>
+                    <form action="" class="bg-white p-10 border border-gray-300" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label for="">Property Name</label>
+                        <input type="text" class="mt-2 mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Enter Name" name="title" value="{{ listing.title }}">
+                        <label for="">Address</label>
+                        <div id="geocoder"></div>
+                        <input type="text" id="address" class="mt-2 mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Enter Address" readonly name="address" value="{{ listing.address }}">
+                        <label for="" class="hidden">Latitude</label>
+                        <input type="text" id="latitude" class="hidden mt-2 mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" name="latitude" readonly value="{{ listing.latitude }}">
+                        <label for="" class="hidden">Longitude</label>
+                        <input type="text" id="longitude" class="hidden mt-2 mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" name="longitude" readonly value="{{ listing.longitude }}">
+                        <label for="">City</label>
+                        <input type="text" id="city" class="mt-2 mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Enter City" readonly name="city" value="{{ listing.city }}">
+                        <label for="">Description</label>
+                        <textarea name="description" id="" placeholder="Enter Description" class="mb-3 pl-5 pt-3 w-full h-32 border border-gray-300">{{ listing.description }}</textarea>
+
+                        <div class="flex gap-12 mt-5">
+                            <div class="flex flex-col">
+                                <label for="">Price</label>
+                                <input type="number" class="mt-2 mb-3 w-60 h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Enter Price" name="price" min="0" value="{{ listing.price }}">
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="">Bedrooms</label>
+                                <input type="number" class="mt-2 mb-3 w-60 h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Enter Bedroom" name="bedrooms" min="0" value="{{ listing.bedrooms }}">
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="">Bathrooms</label>
+                                <input type="number" class="mt-2 mb-3 w-60 h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Enter Bathroom" name="bathrooms" min="0" value="{{ listing.bathrooms }}">
+                            </div>
+                        </div>
+
+                        <div class="flex gap-12 mt-5">
+                            <div class="flex flex-col">
+                                <label for="">Area</label>
+                                <input type="number" class="mt-2 mb-3 w-60 h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Enter Area" name="area" min="0" value="{{ listing.area }}">
+                            </div>
+                        </div>
+
+                        <div class="flex gap-12 mt-5">
+
+                            <div class="flex flex-col">
+                                <label for="">Sale Type</label>
+                                <select name="sale_type" id="childrens" class="mt-3 bg-gray-50 border border-gray-300 text-gray-400 text-base focus:ring-blue-500 focus:border-blue-500  w-60 h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" style="padding-left:18px;">
+                                    {% for item in sale_type_list %}
+                                    <option value="{{ item }}">{{ item }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label for="">Home Type</label>
+                                <select name="home_type" id="childrens" class="mt-3 bg-gray-50 border border-gray-300 text-gray-400 text-base focus:ring-blue-500 focus:border-blue-500  w-60 h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" style="padding-left:18px;">
+                                    {% for item in home_type_list %}
+                                    <option value="{{ item }}">{{ item }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-20 mt-5">
+                            <div class="flex flex-col">
+                                <label for="">Main Photo</label>
+                                <input name="main_photo" type="file" class="mt-2 mb-3 w-96 h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Select Photo" readonly>
+                            </div>
+                            <button class="mt-8 bg-red-500 hover: hover:bg-blue-500 text-white hover:text-black" style="width: 200px; height: 47px;" type="button">Select Photo</button>  
+                        </div>
+
+                        <div class="flex mt-5">
+                            <div class="flex flex-col">
+                                <a href="#" for="" class="hover:text-sky-400">Description Photo (Click)</a>
+                                
+                            </div>
+                        </div>
+
+                        <div class="flex gap-20 mt-5">
+                            <div class="flex flex-col">
+                                <label for="">Date Created</label>
+                                <input name="date_created" value="{{ date_cre }}" required id="dtpk" datepicker type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-200 p-2.5 dark:placeholder-gray-400 dark:text-white " placeholder="mm/dd/yyyy">
+                            </div>
+                        </div>
+
+                        <div class="flex gap-12 mt-5">
+                            <div class="flex flex-col">
+                                <label for="">Publish</label>
+                                <input type="checkbox" class="mt-2 mb-3 w-60 h-12 border border-gray-200" style="padding-left: 20px;" name="published" {% if listing.is_published %} checked {% endif %}>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center items-center mt-5">
+                            <button class="mt-8 bg-red-500 hover: hover:bg-blue-500 text-white hover:text-black" style="width: 200px; height: 47px;" type="submit">Submit</button> 
+                        </div>
+
+                    </form>
+                </div>
+        </div>
+    </section>
+</div>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoidHJpc3RlbiIsImEiOiJjajZoOXU4Z2kwNnppMnlxd2d6bTFvZ2xtIn0.PP7AoUakMfeqdXFHdsY0oA';
+
+    const geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        types: 'country,region,address,place,postcode,locality,neighborhood',
+        placeholder: 'Nhập địa điểm',
+        countries: 'VN'
+    });
+
+    document.getElementById('geocoder').appendChild(geocoder.onAdd());
+
+    geocoder.on('result', function(e) {
+        const coordinates = e.result.geometry.coordinates;
+        const longitude = coordinates[0];
+        const latitude = coordinates[1];
+
+        // Gán giá trị latitude và longitude vào các ô input
+        document.getElementById('latitude').value = latitude;
+        document.getElementById('longitude').value = longitude;
+
+        const address = e.result.place_name;
+
+        // Lấy thông tin về thành phố từ kết quả geocoder
+        const context = e.result.context;
+        let city = '';
+
+        context.forEach((item) => {
+            if (item.id.includes('place')) {
+                city = item.text;
+            } else if (item.id.includes('region')) {
+                city = item.text;
+            }
+        });
+
+        // Gán giá trị city vào ô input
+        document.getElementById('address').value = address;
+        document.getElementById('city').value = city;
+    });
+</script>
+{% endblock content %}

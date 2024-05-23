@@ -1,0 +1,15 @@
+.env
+
+index/__pycache__/
+index/migrations/__pycache__/
+
+flat_rent_web/__pycache__/
+
+user/__pycache__/
+user/migrations/__pycache__/
+
+listing/__pycache__/
+listing/migrations/__pycache__/
+
+media/
+db.sqlite3

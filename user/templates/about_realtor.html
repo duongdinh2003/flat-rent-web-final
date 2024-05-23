@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% block title %}About Realtor{% endblock title %}
+{% block content %}
+<section class="mt-16">
+    <div class="container relative">
+        <img src="/media/img_details/img_review.jpg" alt="" class="w-full h-96">
+        <div class="gradient absolute top-0 left-0 w-full h-full"></div>
+    
+        <span class="text-white text-4xl font-medium absolute top-56 left-0 pl-20">Agent</span>
+        <div class="text-white text-sm absolute top-64 left-0 pl-20 pt-5">
+            <a href="{% url 'index' %}" class="hover:text-red-400">Home </a> /
+            <a href="#" class="text-red-400">Agents</a>
+        </div>
+    </div>                   
+</section>
+
+<section class="pt-10 pl-32 pr-32 border border-gray-300">
+    <div class="border border-gray-300 rounded-lg">
+        <div class="grid grid-cols-2 p-10 gap-20">
+            <div class="col-span-1">
+                <img src="{% if realtor_info.avatar %}{{ realtor_info.avatar.url }}{% else %}/media/img_agent/user.png{% endif %}" alt="" class="rounded-lg" style="width: 560px; height: 600px;">
+            </div>
+
+            <div class="col-span-1 flex flex-col mt-32">
+                <span class="text-4xl font-medium">{{ realtor.name }}</span>
+                <span class="text-base text-gray-500 mt-1 mb-7">Real Estate Agent</span>
+
+                <div class="border border-gray-200 mb-7"></div>
+
+                <ul>
+                    <li class="">
+                        <span class="font-medium">Experience : </span>
+                        <span class="text-gray-500 pl-5"> {{ realtor_info.experience }} Years</span>
+                    </li>
+                    <li class="mt-3">
+                        <span class="font-medium">Company : </span>
+                        <span class="text-gray-500 pl-5"> {{ realtor_info.company }}</span>
+                    </li>
+                    <li class="mt-3">
+                        <span class="font-medium">Address : </span>
+                        <span class="text-gray-500 pl-10"> {{ realtor_info.address }}</span>
+                    </li>
+                    <li class="mt-3">
+                        <span class="font-medium">Phone : </span>
+                        <span class="text-gray-500 pl-12"> {{ realtor_info.phone_number }}</span>
+                    </li>
+                    <li class="mt-3">
+                        <span class="font-medium">Email : </span>
+                        <span class="text-gray-500 pl-14"> {{ realtor.email }}</span>
+                    </li>
+                </ul>
+
+                <div class="border border-gray-200 mt-7 mb-7"></div>
+
+                <div class="flex">
+                    <span class="font-medium text-lg">Follow on: </span>
+                    <div class="pl-10 flex gap-6">
+                        <a href="#" class="">
+                            <div class="w-8 h-8 bg-gray-100 rounded-lg flex justify-center items-center hover:bg-sky-200">
+                                <i class="fa fa-facebook"></i>
+                            </div>
+                        </a>
+
+                        <a href="#" class="">
+                            <div class="w-8 h-8 bg-gray-100 rounded-lg flex justify-center items-center hover:bg-sky-200">
+                                <i class="fa fa-linkedin"></i>
+                            </div>
+                        </a>
+
+                        <a href="#" class="">
+                            <div class="w-8 h-8 bg-gray-100 rounded-lg flex justify-center items-center hover:bg-sky-200">
+                                <i class="fa fa-twitter"></i>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="flex flex-col pl-10 pr-10">
+            <span class="text-3xl font-medium">
+                About {{ realtor.name }}
+            </span>
+            <p class="text-gray-500 mt-5 leading-loose">
+                {{ realtor_info.bio }}
+            </p>
+            <p class="text-gray-500 mt-3 leading-loose">
+            </p>
+        </div>
+
+        <div class="flex pl-10 pr-10 pt-6">
+            <ul class="flex gap-8">
+                <li class="text-red-500 font-medium hover:text-red-500">
+                    <a href="#" class="hover_link" id="properties_link">
+                        <span id="text_properties_link">Listed Properties</span>
+                        <div class="translate_div fade-in border border-red-500 mb-7"></div>
+                    </a>
+                </li>
+    
+                <li class="font-medium hover:text-red-500">
+                    <a href="" class="hover_link" id="review_link">
+                        <span id="text_review_link">Customer Review</span>
+                        <div class="translate_div fade-in border border-red-500 mb-7"></div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('review_link').addEventListener('click', function(event) {
+                    event.preventDefault();  
+                    document.getElementById('text_properties_link').style.color = 'black';
+                    document.getElementById('text_review_link').style.color = 'red';
+
+                    document.querySelector('#list_properties').classList.add('hidden');
+                    document.querySelector('#list_reviews').classList.remove('hidden');
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('properties_link').addEventListener('click', function(event) {
+                    event.preventDefault();  
+                    document.getElementById('text_review_link').style.color = 'black';
+                    document.getElementById('text_properties_link').style.color = 'red';
+
+                    document.querySelector('#list_properties').classList.remove('hidden');
+                    document.querySelector('#list_reviews').classList.add('hidden');
+                });
+            });
+        </script>
+
+        <script>
+            document.querySelectorAll('.hover_link').forEach(function(hoverLink) {
+                hoverLink.addEventListener('mouseenter', function() {
+                    this.querySelector('.translate_div').classList.add('visible');
+                });
+    
+                hoverLink.addEventListener('mouseleave', function() {
+                    this.querySelector('.translate_div').classList.remove('visible');
+                });
+            });
+        </script>
+
+        <div id="list_properties" class="flex pl-10 pr-10 pb-10">
+            <div class="grid grid-cols-3 gap-8">
+
+                {% for property in properties %}
+                <div class="col-span-1">
+
+                    <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700" data-home="1">
+                        <div class="relative">
+                            <button class="rounded-full absolute top-28 left-0 bg-gray-300 w-10 h-10 opacity-55 hover:bg-green-300 hover:opacity-100" onclick="changeImage(event, -1, 1)">
+                                <i class="fa fa-angle-left" style="font-size:24px"></i>
+                            </button>
+                            <img id="slideImage1" class="rounded-t-lg" src="/media/img_agent/detail_1_home_1.jpg" alt="" />
+                            <button class="rounded-full absolute top-28 right-0 bg-gray-300 w-10 h-10 opacity-55 hover:bg-green-300 hover:opacity-90" onclick="changeImage(event, 1, 1)">
+                                <i class="fa fa-angle-right" style="font-size:24px"></i>
+                            </button>
+                        </div>                
+                        
+                        <div class="p-5">
+                            <div class="flex">
+                                <div class="w-24 h-10 bg-red-500 flex justify-center items-center rounded-lg">
+                                    <span class="text-white font-medium">{{ property.sale_type }}</span>
+                                </div>
+                                <p class="flex ml-auto text-lg pt-2">
+                                    <span class="text-blue-500">${{ property.price }}/</span>
+                                    <span class="text-gray-500">month</span>
+                                </p>
+                            </div>
+        
+                            <div class="border border-gray-200 mt-3 mb-3"></div>
+        
+                            <a href="{% url 'detail_listing' property.id %}">
+                                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white hover:text-red-500">{{ property.title }}</h5>
+                            </a>
+        
+                            <p class="flex mb-3 font-normal text-gray-700 dark:text-gray-400 mt-5">
+                                <img src="/media/svg_reviews/location.svg" alt="" class="bg-gray-400 w-5 h-5 rounded-xl">
+                                <span class="text-gray-400 ml-2">{{ property.address }}</span>
+                            </p>
+                            <div class="flex justify-center items-center mt-7">
+                                <ul class="flex" style="gap: 60px;">
+                                    <li class="flex">
+                                        <img src="/media/img_reviews/bed.png" alt="" class="w-5 h-5">
+                                        <span class="text-gray-400 ml-2">{{ property.bedrooms }}</span>
+                                    </li>
+                                    <li class="flex">
+                                        <img src="/media/img_reviews/bath.png" alt="" class="w-5 h-5">
+                                        <span class="text-gray-400 ml-2">{{ property.bathrooms }}</span>
+                                    </li>
+                                    <li class="flex">
+                                        <img src="/media/img_reviews/ruler.png" alt="" class="w-5 h-5">
+                                        <span class="text-gray-400 ml-2">{{ property.area }}m2</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                {% endfor %}
+
+                <script>
+                    
+                    let currentImageIndex = 1;
+                    let currentHome = 1;
+                    const totalImages = 3;
+                    
+                    function changeImage(event, direction, value) {
+                        event.preventDefault();
+                        const style = document.createElement('style');
+                        // Đặt nội dung của thẻ style là transition cho #slideImage
+                        style.textContent = '#slideImage' + value + '{ transition: opacity 0.5s ease-in-out; }';
+                        // Chèn thẻ style vào phần head của tài liệu
+                        document.head.appendChild(style);
+                        currentHome = value;
+                        const slideImage = document.getElementById('slideImage'+value);
+                        slideImage.classList.remove('fade-in-slow');
+                        slideImage.classList.add('fade-out');
+                        setTimeout(() => {
+                            currentImageIndex += direction;
+                            if (currentImageIndex < 1) {
+                                currentImageIndex = totalImages;
+                            } else if (currentImageIndex > totalImages) {
+                                currentImageIndex = 1;
+                            }
+                
+                            const newImagePath = `/media/img_agent/detail_${currentImageIndex}_home_${currentHome}.jpg`;
+                            slideImage.src = newImagePath;
+                            slideImage.classList.remove('fade-out');
+                            slideImage.classList.add('fade-in-slow');
+                        }, 500);
+                    }
+                </script>
+            </div>
+        </div>
+
+        <div id="list_reviews" class="hidden flex flex-col mb-10">
+            {% for review in listing_reviews %}
+            <div class="flex pl-10 pr-10 pb-10">
+                <img src="{% if review.customer_avatar %}{{ review.customer_avatar.url }}{% else %}/media/img_agent/user.png{% endif %}" alt="" class="w-28 rounded-full">
+                <div class="flex flex-col pl-5">
+                    <span class="text-lg font-medium">{{ review.customer_name }}</span>
+                    <span class="text-sm text-gray-500 pt-1">22/04/2022</span>
+                    <div class="mt-1">
+                        <img src="/media/img_comments/star.png" alt="" class="" style="width: 20px; height: 20px;">
+                        <span class="text-gray-700">{{ review.vote|floatformat:1 }}</span>
+                    </div>
+                    <p class="leading-relaxed pt-1 text-gray-500">
+                        {{ review.review }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="border border-gray-200 mb-7 ml-10 mr-10"></div>
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+{% endblock content %}

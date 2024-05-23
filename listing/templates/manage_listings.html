@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block title %}Listings{% endblock title %}
+{% block content %}
+<section class="mt-16">
+    <div class="container relative">
+        <img src="/media/img_details/img_review.jpg" alt="" class="w-full h-96">
+        <div class="gradient absolute top-0 left-0 w-full h-full"></div>
+    
+        <span class="text-white text-4xl font-medium absolute top-56 left-0 pl-20">Agent</span>
+        <div class="text-white text-sm absolute top-64 left-0 pl-20 pt-5">
+            <a href="{% url 'index' %}" class="hover:text-red-400">Home </a> /
+            <a href="#" class="text-red-400"> Property </a>
+        </div>
+    </div>                   
+</section>
+
+<section class="pt-10 pl-32 pr-32 border border-gray-300">
+    <div class="border border-gray-300 rounded-lg">
+        <nav aria-label="Page navigation example">
+            <ul class="flex items-center -space-x-px h-10 text-base">
+                {% if page_obj.has_previous %}
+                <li>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                    <span class="sr-only">Previous</span>
+                    <svg class="w-3 h-3 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                    </svg>
+                    </a>
+                </li>
+                {% else %}
+                <li>
+                    <a class="disabled flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                    <span class="sr-only">Previous</span>
+                    <svg class="w-3 h-3 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                    </svg>
+                    </a>
+                </li>
+                {% endif %}
+                {% for num in num_page %}
+                    {% if num == page_obj.number %}
+                    <li>
+                        <a href="?page={{ num }}" aria-current="page" class="z-10 flex items-center justify-center px-4 h-10 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">{{ num }}</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="?page={{ num }}" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                <li>
+                    <a href="?page={{ page_obj.next_page_number }}" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                    <span class="sr-only">Next</span>
+                    <svg class="w-3 h-3 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    </a>
+                </li>
+                {% else %}
+                <li>
+                    <a class="disabled flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                    <span class="sr-only">Next</span>
+                    <svg class="w-3 h-3 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    </a>
+                </li>
+                {% endif %}
+                
+            </ul>
+        </nav>
+    
+        <div id="list_properties" class="flex pl-10 pr-10 pb-10">
+            <div class="grid grid-cols-3 gap-8">
+
+                {% for property in page_obj %}
+                <div class="col-span-1">
+
+                    <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700" data-home="1">
+                        <div class="relative">
+                            <button class="rounded-full absolute top-28 left-0 bg-gray-300 w-10 h-10 opacity-55 hover:bg-green-300 hover:opacity-100" onclick="changeImage(event, -1, 1)">
+                                <i class="fa fa-angle-left" style="font-size:24px"></i>
+                            </button>
+                            <img id="slideImage1" class="rounded-t-lg" src="/media/img_agent/detail_1_home_1.jpg" alt="" />
+                            <button class="rounded-full absolute top-28 right-0 bg-gray-300 w-10 h-10 opacity-55 hover:bg-green-300 hover:opacity-90" onclick="changeImage(event, 1, 1)">
+                                <i class="fa fa-angle-right" style="font-size:24px"></i>
+                            </button>
+                        </div>                
+                        
+                        <div class="p-5">
+                            <div class="flex">
+                                <div class="w-24 h-10 bg-red-500 flex justify-center items-center rounded-lg">
+                                    <span class="text-white font-medium">{{ property.sale_type }}</span>
+                                </div>
+                                <p class="flex ml-auto text-lg pt-2">
+                                    <span class="text-blue-500">${{ property.price }}/</span>
+                                    <span class="text-gray-500">month</span>
+                                </p>
+                            </div>
+
+                            <div class="border border-gray-200 mt-3 mb-3"></div>
+
+                            <a href="{% url 'edit_property' property.id %}">
+                                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white hover:text-red-500">{{ property.title }}</h5>
+                            </a>
+
+                            <p class="flex mb-3 font-normal text-gray-700 dark:text-gray-400 mt-5">
+                                <img src="/media/svg_reviews/location.svg" alt="" class="bg-gray-400 w-5 h-5 rounded-xl">
+                                <span class="text-gray-400 ml-2">{{ property.address }}</span>
+                            </p>
+                            <div class="flex justify-center items-center mt-7">
+                                <ul class="flex" style="gap: 60px;">
+                                    <li class="flex">
+                                        <img src="/media/img_reviews/bed.png" alt="" class="w-5 h-5">
+                                        <span class="text-gray-400 ml-2">{{ property.bedrooms }}</span>
+                                    </li>
+                                    <li class="flex">
+                                        <img src="/media/img_reviews/bath.png" alt="" class="w-5 h-5">
+                                        <span class="text-gray-400 ml-2">{{ property.bathrooms }}</span>
+                                    </li>
+                                    <li class="flex">
+                                        <img src="/media/img_reviews/ruler.png" alt="" class="w-5 h-5">
+                                        <span class="text-gray-400 ml-2">{{ property.area }}m2</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                {% endfor %}
+
+                <script>
+                    
+                    let currentImageIndex = 1;
+                    let currentHome = 1;
+                    const totalImages = 3;
+                    
+                    function changeImage(event, direction, value) {
+                        event.preventDefault();
+                        const style = document.createElement('style');
+                        // Đặt nội dung của thẻ style là transition cho #slideImage
+                        style.textContent = '#slideImage' + value + '{ transition: opacity 0.5s ease-in-out; }';
+                        // Chèn thẻ style vào phần head của tài liệu
+                        document.head.appendChild(style);
+                        currentHome = value;
+                        const slideImage = document.getElementById('slideImage'+value);
+                        slideImage.classList.remove('fade-in-slow');
+                        slideImage.classList.add('fade-out');
+                        setTimeout(() => {
+                            currentImageIndex += direction;
+                            if (currentImageIndex < 1) {
+                                currentImageIndex = totalImages;
+                            } else if (currentImageIndex > totalImages) {
+                                currentImageIndex = 1;
+                            }
+                
+                            const newImagePath = `/media/img_agent/detail_${currentImageIndex}_home_${currentHome}.jpg`;
+                            slideImage.src = newImagePath;
+                            slideImage.classList.remove('fade-out');
+                            slideImage.classList.add('fade-in-slow');
+                        }, 500);
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

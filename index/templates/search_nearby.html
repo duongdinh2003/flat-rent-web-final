@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Mapbox Geocoding</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' type='text/css' />
+  <style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+    #geocoder-container { position:absolute; top:10px; left:10px; z-index:1; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+<div id="geocoder-container"></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoidHJpc3RlbiIsImEiOiJjajZoOXU4Z2kwNnppMnlxd2d6bTFvZ2xtIn0.PP7AoUakMfeqdXFHdsY0oA';
+
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [108.148915, 16.070704], // Tọa độ trung tâm ban đầu
+  zoom: 12
+});
+
+const geocoder = new MapboxGeocoder({
+  accessToken: mapboxgl.accessToken,
+  mapboxgl: mapboxgl,
+  marker: false, // Để không thêm marker tự động
+  countries: 'VN'
+});
+
+document.getElementById('geocoder-container').appendChild(geocoder.onAdd(map));
+
+map.on('load', () => {
+//   const fps = new mapboxgl.FrameRateControl();
+//   map.addControl(fps);
+
+  // Hàm để vẽ đường đi lên bản đồ
+  function drawRoute(origin, destination) {
+    var url = 'https://api.mapbox.com/directions/v5/mapbox/driving/' + origin + ';' + destination + '?geometries=geojson&steps=true&access_token=' + mapboxgl.accessToken;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        var route = data.routes[0].geometry;
+        map.addSource('route', {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            properties: {},
+            geometry: route
+          }
+        });
+        map.addLayer({
+          id: 'route',
+          type: 'line',
+          source: 'route',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': '#007cbf',
+            'line-width': 8
+          }
+        });
+      })
+      .catch(error => console.log('Lỗi:', error));
+  }
+
+  // Lấy vị trí hiện tại của người dùng và gắn biểu tượng định vị trí
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var latitude = position.coords.latitude;
+      var longitude = position.coords.longitude;
+
+      // Tạo biểu tượng vị trí hiện tại
+      const marker = new mapboxgl.Marker()
+        .setLngLat([longitude, latitude]) // Kinh độ, Vĩ độ
+        .addTo(map);
+
+      // Di chuyển bản đồ tới vị trí hiện tại
+      map.setCenter([longitude, latitude]);
+      map.setZoom(15);
+
+      // Vẽ đường đi từ vị trí hiện tại đến vị trí đích
+      var origin = longitude + ',' + latitude;
+      var destination = '16.070704, 108.148915'; // Vị trí đích (lưu ý là kinh độ trước, vĩ độ sau)
+      drawRoute(origin, destination);
+
+      console.log("Vị trí hiện tại của bạn là:", latitude, longitude);
+    }, function(error) {
+      console.error("Không thể lấy được vị trí hiện tại:", error);
+    });
+  } else {
+    console.error("Trình duyệt không hỗ trợ định vị.");
+  }
+});
+
+// Sự kiện khi chọn địa điểm từ gợi ý của geocoder
+geocoder.on('result', function(e) {
+  const coordinates = e.result.geometry.coordinates;
+  map.flyTo({
+    center: coordinates,
+    zoom: 15
+  });
+
+  // Nếu có marker hiện tại thì gỡ bỏ
+  if (marker) {
+    marker.remove();
+  }
+
+  // Thêm marker tại địa điểm đã chọn
+  const marker = new mapboxgl.Marker()
+    .setLngLat(coordinates)
+    .addTo(map);
+});
+</script>
+</body>
+</html>

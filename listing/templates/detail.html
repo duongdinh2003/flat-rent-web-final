@@ -1,0 +1,450 @@
+{% extends 'base.html' %}
+{% block title %}Detail{% endblock title %}
+{% block content %}
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' type='text/css' />
+<style>
+    body { margin: 0; padding: 0; }
+    #md-openmap { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center; }
+    #md-openmap.active { display: flex; }
+    .modal-content {
+        position: relative;
+        width: 60%;
+        height: 80%;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #map {
+        width: 600px;
+        height: 500px;
+    }
+    #closeModalBtn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: red;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+</style>
+<div class="page-detail">
+    <section class="mt-16">
+        <div class="container relative">
+            <img src="/media/img_details/img_review.jpg" alt="" class="w-full h-96">
+            <div class="gradient absolute top-0 left-0 w-full h-full"></div>
+        
+            <span class="text-white text-4xl font-medium absolute top-56 left-0 pl-20">Listing Details</span>
+            <div class="text-white text-sm absolute top-64 left-0 pl-20 pt-5">
+                <a href="{% url 'index' %}" class="hover:text-red-400">Home </a> /
+                {% if user.is_realtor %}
+                <a href="{% url 'manage_listing' %}" class="hover:text-red-400"> Property </a> /
+                {% endif %}
+                <a href="#" class="text-red-400">Listing Details</a>
+            </div>
+        </div>                   
+    </section>
+
+    <section class="mt-5">
+        <div class="grid grid-cols-3 gap-4">
+            <div class="col-span-2 p-20 border border-gray-300">
+                
+                <div class="flex-col">
+                    <div class="flex">
+                        <span class="text-4xl font-medium">
+                            {{ listing.title }}
+                        </span>
+                        <div class="flex pt-3 ml-auto">
+                            <span class="text-red-500 text-lg font-bold">${{ listing.price }}/</span>
+                            <span class="text-gray-500 text-lg">month</span>
+                        </div>
+                    </div>
+                    <div class="flex pt-4 gap-36">
+                        <div class="flex">
+                            <img src="/media/img_details/click.gif" alt="" style="width: 20px; height: 20px; transform: rotate(75deg);" class="mr-1">
+                            <button class="border border-lime-500 rounded-lg hover:bg-emerald-300 pl-3 pr-3" id="openModalBtn">
+                                <i class='fas fa-map-marked-alt'></i>
+                            </button>
+                            <!-- Modal -->
+                            <div id="md-openmap" class="fixed inset-0 z-50 flex justify-center items-center bg-gray-900 bg-opacity-50">
+                                <div class="modal-content p-10">
+                                    <!-- Button to close the modal -->
+                                    <button id="closeModalBtn">Close</button>
+                                    <!-- Map container -->
+                                    <div id='map'></div>
+                                </div>
+                            </div>
+                            <!-- <img src="/media/svg_reviews/location.svg" alt="" class="bg-gray-400 w-5 h-5 rounded-xl"> -->
+                            <span class="text-gray-400 ml-2">{{ listing.address }}</span>
+                            <input type="number" class="hidden" id="property-latitude" value="{{ listing.latitude }}" readonly>
+                            <input type="number" class="hidden" id="property-longitude" value="{{ listing.longitude }}" readonly>
+                        </div>
+                        <div class="flex">
+                            <img src="/media/img_reviews/ruler.png" alt="" class="w-5 h-5">
+                            <span class="text-gray-400 ml-2">{{ listing.area }}m2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container relative">
+                    <img src="{{ listing.main_photo.url }}" alt="" class="rounded-lg mt-5" style="height: 526px; width: 856px;">
+                    <div class="absolute top-4 left-4 w-24 h-8 bg-red-500 rounded-md flex justify-center items-center">
+                        <span class="text-white">{{ listing.sale_type }}</span>
+                    </div>
+                </div>   
+                
+                <div class="flex-col pt-10">
+                    <span class="font-medium text-xl">Description</span>
+                    <p class="text-gray-500 text-sm pt-3 leading-loose">
+                        {{ listing.description }}
+                    </p>
+
+                    <p class="text-gray-500 text-sm pt-5 pb-10 leading-loose">
+                        Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. 
+                        Donec sollicitudin molestie malesuada. Nulla porttitor accumsan tincidunt. 
+                        Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. 
+                        Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. 
+                        Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. 
+                        Proin eget tortor risus. Donec rutrum congue leo eget malesuada. 
+                        Pellentesque in ipsum id orci porta dapibus.
+                    </p>
+
+                    <div class="pb-10">
+                        <span class="font-medium text-xl">Property Details</span>
+                        <div class="grid grid-cols-3 gap-4 pb-5">
+                            <div class="flex-col pt-2 leading-loose">
+                                <ul class="flex-col">
+                                    <li>
+                                        <span class="text-sm font-medium">Property ID : </span>
+                                        <span class="text-gray-500">{{ listing.id }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="text-sm font-medium">Property Price : </span>
+                                        <span class="text-gray-500">${{ listing.price }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="text-sm font-medium">Bathrooms : </span>
+                                        <span class="text-gray-500">{{ listing.bathrooms }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="flex-col pt-2 leading-loose">
+                                <ul class="flex-col">
+                                    <li>
+                                        <span class="text-sm font-medium">Property Type : </span>
+                                        <span class="text-gray-500">{{ listing.home_type }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="text-sm font-medium">Rooms : </span>
+                                        <span class="text-gray-500">6</span>
+                                    </li>
+                                    <li>
+                                        <span class="text-sm font-medium">Garages : </span>
+                                        <span class="text-gray-500">4</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="flex-col pt-2 leading-loose">
+                                <ul class="flex-col">
+                                    <li>
+                                        <span class="text-sm font-medium">Property Status : </span>
+                                        <span class="text-gray-500">{{ listing.sale_type }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="text-sm font-medium">Bedrooms : </span>
+                                        <span class="text-gray-500">{{ listing.bedrooms }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="text-sm font-medium">Year Built : </span>
+                                        <span class="text-gray-500">{{ listing.date_created.date }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pb-10">
+                        <span class="font-medium text-xl">Floor Plans</span>
+                        <div class="flex justify-center items-center pt-10">
+                            <img src="/media/img_details/blueprint.png" alt="" class="rounded-lg">
+                        </div>
+                    </div>
+                </div>
+
+                {% if not user.is_realtor %}
+                <span class="mt-2 text-2xl font-medium">Add Your Review</span>
+
+                <form action="{% url 'review_listing' %}" method="post">
+                    {% csrf_token %}
+                    <div class="pt-5">
+                        <div class="border border-gray-300 p-5">
+                            <div class="flex">
+                                <div class="flex flex-col gap-5">
+                                    <span class="text-gray-500">Your ratings for this property</span>
+                                    <input class="hidden" type="number" name="id_property" value="{{ listing.id }}" readonly>
+                                    <div class="flex items-center gap-2" id="star-container">
+                                        <i class="far fa-star star-icon rounded-full"></i>
+                                        <i class="far fa-star star-icon rounded-full"></i>
+                                        <i class="far fa-star star-icon rounded-full"></i>
+                                        <i class="far fa-star star-icon rounded-full"></i>
+                                        <i class="far fa-star star-icon rounded-full"></i>
+                                        <input type="number" id="property-vote" name="vote" min="1" max="5" value="5" readonly>
+                                    </div>                                                                      
+                                </div>
+
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', () => {
+                                        const stars = document.querySelectorAll('#star-container .star-icon');
+                                        const voteInput = document.getElementById('property-vote');
+                                        let clickedIndex = -1;
+                            
+                                        stars.forEach((star, index) => {
+                                            star.addEventListener('click', () => {
+                                                setStars(index);
+                                                voteInput.value = index + 1;
+                                            });
+                                        });
+                            
+                                        function setStars(index) {
+                                            clickedIndex = index;
+                                            stars.forEach((star, i) => {
+                                                if (i <= index) {
+                                                    star.classList.add('bg-yellow-200');
+                                                } else {
+                                                    star.classList.remove('bg-yellow-200');
+                                                }
+                                            });
+                                        }
+                                    });
+                                </script>
+                                
+                                <div class="relative inline-block ml-auto">
+                                    <button class="bg-red-500 text-white pt-3 pb-3 pl-5 pr-5 mt-3 rounded-lg hover:bg-green-300 hover:text-black" type="button">Upload Image</button>
+                                    <input type="file" id="avatar-input" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" onchange="previewImage(this)">
+                                </div>                                
+                            </div>
+
+                            <div class="flex gap-3 mt-2">
+                                {% if not user.is_authenticated %}
+                                <input type="text" class="mt-5 mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="First Name">
+                                <input type="text" class="mt-5 mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Last Name">
+                                {% endif %}
+                            </div>
+
+                            <div class="flex flex-col mt-2 gap-2">
+                                {% if not user.is_authenticated %}
+                                <input type="email" class="mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Email Address">
+                                {% endif %}
+                                <textarea name="review" id="" placeholder="Write A Review" class="mb-3 pl-5 pt-3 w-full h-32 border border-gray-200"></textarea>
+                            </div>
+
+                            <div class="mt-3">
+                                <button class="bg-red-500 text-white pt-3 pb-3 pl-7 pr-7 rounded-lg hover:bg-green-300 hover:text-black" type="submit">Submit Review</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+                {% endif %}
+
+            </div>
+
+            {% if not user.is_realtor %}
+            <div class="col-span-1">
+                <div class="flex justify-center items-center mb-2">
+                    <form action="" class="bg-white p-10 border border-gray-300" method="post">
+                        {% csrf_token %}
+                        <span class="text-2xl font-medium">Book This {{ listing.home_type }}</span>
+                        {% if not user.is_authenticated %}
+                        <input type="text" class="mt-5 mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Full Name">
+                        <input type="text" class="mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Phone Number">
+                        <input type="email" class="mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Email Address">
+                        {% endif %}
+                        <select id="family-members" class="mt-5 mb-3 bg-gray-50 border border-gray-300 text-gray-400 text-base focus:ring-blue-500 focus:border-blue-500  w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" style="padding-left:18px;">
+                            <option selected>Family Members</option>
+                            <option value="2">2</option>
+                            <option value="4">4</option>
+                            <option value="6">6</option>
+                        </select>
+                        <select name="months" id="months" class="mb-3 bg-gray-50 border border-gray-300 text-gray-400 text-base focus:ring-blue-500 focus:border-blue-500  w-full h-12 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" style="padding-left:18px;">
+                            <option selected>Months</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                        <textarea name="message" id="Message" placeholder="Your Message" class="mb-3 pl-5 pt-3 w-full h-32 border border-gray-300"></textarea>
+                        <button class="bg-red-500 hover: hover:bg-green-300 text-white hover:text-black" style="width: 200px; height: 47px;" type="submit">Request Booking</button>  
+                    </form>
+                </div>
+
+                <div class="p-10 border border-gray-300 mb-2">
+                    <span class="text-2xl font-medium">Recent Properties</span>
+                    <div class="flex-col mt-5">
+                        {% for listing in recent_listings %}
+                        <div class="flex mb-3">
+                            <img src="{{ listing.main_photo.url }}" alt="" class="rounded-lg w-20">
+                            <div class="flex-col pt-1 pl-6">
+                                <a href="{% url 'detail_listing' listing.id %}" class="text-lg font-medium">{{ listing.title }}</a>
+                                <p>
+                                    <span class="text-red-500 font-medium">${{ listing.price }} </span>
+                                    <span>/month</span>
+                                </p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="flex justify-center items-center border border-gray-300">
+                    <form action="" class="bg-white p-10" method="post">
+                        {% csrf_token %}
+                        <span class="text-2xl font-medium">Agent Information</span>
+
+                        <div class="flex items-center mt-3">
+                            <img src="{% if realtor_info.avatar %}{{ realtor_info.avatar.url }}{% else %}/media/img_agent/user.png{% endif %}" alt="" class="w-20 rounded-full">
+                            <div class="flex flex-col ml-4"> 
+                                <a href="{% url 'about_realtor' realtor.id %}" class="text-lg font-medium hover:text-cyan-700">{{ realtor.name }}</a>
+                                <span class="text-gray-500 text-sm">Senior Sales Manager</span>
+                            </div>
+                        </div>       
+                        
+                        <div class="border border-gray-200 mt-3 mb-3"></div>
+
+                        <div class="flex flex-col gap-2">
+                            <div class="flex">
+                                <i class='fas fa-map-marker-alt pt-1'></i> <span class="text-gray-500 pl-4">{{ realtor_info.address }}</span>
+                            </div>
+                            <div class="flex">
+                                <i class='fas fa-phone pt-1'></i> <span class="text-gray-500 pl-3">{{ realtor_info.phone_number }}</span>
+                            </div>
+                            <div class="flex">
+                                <i class='fas fa-envelope-open pt-1'></i> <span class="text-gray-500 pl-4">{{ realtor.email }}</span>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 mt-3 mb-3"></div>
+
+                        {% if not user.is_authenticated %}
+                        <input type="text" class="mt-5 mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Full Name">
+                        <input type="text" class="mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Phone Number">
+                        <input type="email" class="mb-3 w-full h-12 border border-gray-200" style="padding-left: 20px;" placeholder="Email Address">
+                        {% endif %}
+                        <textarea name="message" id="message" placeholder="Your Message" class="mb-3 pl-5 pt-3 w-full h-32 border border-gray-300"></textarea>
+                        <button class="bg-red-500 hover: hover:bg-green-300 text-white hover:text-black" style="width: 200px; height: 47px;" type="submit">Submit Request</button>  
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+</div>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoidHJpc3RlbiIsImEiOiJjajZoOXU4Z2kwNnppMnlxd2d6bTFvZ2xtIn0.PP7AoUakMfeqdXFHdsY0oA';
+
+    let map;
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('md-openmap');
+        const openModalBtn = document.getElementById('openModalBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const property_latitude = document.getElementById('property-latitude').value;
+        const property_longitude = document.getElementById('property-longitude').value;
+
+        openModalBtn.addEventListener('click', () => {
+            modal.classList.add('active');
+
+            // Initialize the map when the modal is opened
+            if (!map) {
+                map = new mapboxgl.Map({
+                    container: 'map',
+                    style: 'mapbox://styles/mapbox/streets-v11',
+                    zoom: 12
+                });
+
+                map.on('load', () => {
+                    // Function to draw the route on the map
+                    function drawRoute(origin, destination) {
+                        const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin};${destination}?geometries=geojson&steps=true&access_token=${mapboxgl.accessToken}`;
+
+                        fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data); // Log dữ liệu trả về ra console để xem có vấn đề gì hay không
+                            const route = data.routes[0].geometry;
+                            map.addSource('route', {
+                                type: 'geojson',
+                                data: {
+                                    type: 'Feature',
+                                    properties: {},
+                                    geometry: route
+                                }
+                            });
+                            map.addLayer({
+                                id: 'route',
+                                type: 'line',
+                                source: 'route',
+                                layout: {
+                                    'line-join': 'round',
+                                    'line-cap': 'round'
+                                },
+                                paint: {
+                                    'line-color': '#007cbf',
+                                    'line-width': 8
+                                }
+                            });
+                        })
+                        .catch(error => console.log('Error:', error));
+                    }
+
+                    // Get the user's current location and add a marker
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            const latitude = position.coords.latitude;
+                            const longitude = position.coords.longitude;
+                            console.log('Latitude:', position.coords.latitude);
+                            console.log('Longitude:', position.coords.longitude);
+                            // Create a marker for the current position
+                            const marker = new mapboxgl.Marker()
+                            .setLngLat([longitude, latitude]) // Longitude, Latitude
+                            .addTo(map);
+
+                            // Move the map to the current position
+                            map.setCenter([longitude, latitude]);
+
+                            // Draw route from current position to destination
+                            const origin = `${longitude},${latitude}`;
+                            const destination = `${property_longitude},${property_latitude}`; // Destination (longitude first, latitude second)
+                            drawRoute(origin, destination);
+
+                            // Create a marker for the destination
+                            const destinationMarker = new mapboxgl.Marker({color: 'red'})
+                            .setLngLat([property_longitude, property_latitude])
+                            .addTo(map);
+
+                            console.log('Current position:', latitude, longitude);
+                        }, function(error) {
+                            console.error('Unable to retrieve your location:', error);
+                        });
+                    } else {
+                        console.error('Geolocation is not supported by this browser.');
+                    }
+                });
+            }
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+    });
+</script>
+{% endblock content %}

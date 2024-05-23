@@ -1,0 +1,94 @@
+<header tabindex="-1" class="header-wrap fixed top-0 start-0 z-50 flex justify-between w-full h-auto border-b border-gray-200 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+    <div class="container pl-10 pr-10 flex">
+        <nav class="flex">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="/media/logo.png" alt="" class="flex" style="width: 192px; height: 140px;">
+            </a>
+            <div class="navbar-menu pt-16" style="width: 1000px;">
+                <ul class="ul-menu flex center justify-center items-center" style="gap: 70px;">
+                    {% if user.is_authenticated %}
+                        {% if user.is_realtor %}
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="{% url 'add_property' %}">Add Property</a>
+                        </li>
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="{% url 'manage_listing' %}">Property</a>
+                        </li>
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="#">Blog</a>
+                        </li>
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="{% url 'profile_realtor' %}">Profile</a>
+                        </li>
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="#">About Us</a>
+                        </li>
+                        {% else %}
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="#">House</a>
+                        </li>
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="#">Condo</a>
+                        </li>
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="#">Townhouse</a>
+                        </li>
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="#">Apartment</a>
+                        </li>
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="#">Resort</a>
+                        </li>
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="#">Villa</a>
+                        </li>
+                        <li class="li-menu hover:text-green-600 font-medium">
+                            <a href="{% url 'profile_renter' %}">Profile</a>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                    <li class="li-menu hover:text-green-600 font-medium">
+                        <a href="#">House</a>
+                    </li>
+                    <li class="li-menu hover:text-green-600 font-medium">
+                        <a href="#">Condo</a>
+                    </li>
+                    <li class="li-menu hover:text-green-600 font-medium">
+                        <a href="#">Townhouse</a>
+                    </li>
+                    <li class="li-menu hover:text-green-600 font-medium">
+                        <a href="#">Apartment</a>
+                    </li>
+                    <li class="li-menu hover:text-green-600 font-medium">
+                        <a href="#">Resort</a>
+                    </li>
+                    <li class="li-menu hover:text-green-600 font-medium">
+                        <a href="#">Villa</a>
+                    </li>
+                    <li class="li-menu hover:text-green-600 font-medium">
+                        <a href="{% url 'search_nearby' %}">Search</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% if user.is_authenticated %}
+                <div class="navbar-btn flex pt-5 w-max" style="gap: 25px;">
+                    <p class="mt-5">Welcome, {{ user.name }}</p>
+                    <a href="{% url 'sign_out_user' %}">
+                        <button id="sign-in" class="bg-green-500 mt-5 rounded-lg hover:bg-green-400 text-white" style="width: 120px; height: 50px;">Sign out</button>
+                    </a>
+                </div>
+            {% else %}
+                <div class="navbar-btn flex pt-5 w-max" style="gap: 25px;">
+                    <button id="sign-in" class="bg-green-500 mt-5 rounded-lg hover:bg-green-400 text-white" style="width: 120px; height: 50px;">Sign in</button>
+                    <button id="sign-up" class="bg-green-500 mt-5 rounded-lg hover:bg-green-400 text-white" style="width: 120px; height: 50px;">Sign up</button>
+                </div>
+                <!-- Modal Sign in -->
+                {% include 'signin.html' %}
+
+                <!-- Modal Sign up -->
+                {% include 'signup.html' %}
+            {% endif %}
+        </nav>
+    </div>
+</header>

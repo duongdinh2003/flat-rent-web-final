@@ -1,0 +1,122 @@
+{% if messages %}
+<div id="toastBox">
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <p id="msg" class="msg-success" hidden><i class="fa-solid fa-circle-check"></i> {{ message }}</p>
+        {% elif message.tags == 'error' %}
+            <p id="msg" class="msg-error" hidden><i class="fa-solid fa-circle-xmark"></i> {{ message }}</p>
+        {% elif message.tags == 'info' %}
+            <p id="msg" class="msg-info" hidden><i class="fa-solid fa-circle-exclamation"></i> {{ message }}</p>
+        {% elif message.tags == 'warning' %}
+            <p id="msg" class="msg-warning" hidden><i class="fa-solid fa-triangle-exclamation"></i> {{ message }}</p>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+<style>
+    #toastBox {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        margin: 20px;
+        padding: 20px;
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .toast {
+        width: 400px;
+        height: 80px;
+        background: #fff;
+        font-weight: 500;
+        margin: 15px 0;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        position: relative;
+        transform: translateX(0);
+        animation: moveright 0.5s linear forwards;
+    }
+
+    @keyframes moveright {
+        0% {
+            transform: translateX(-100%);
+        }
+    }
+
+    .toast i {
+        margin: 0 20px;
+        font-size: 35px;
+        color: green;
+    }
+
+    .toast.error i {
+        color: red;
+    }
+
+    .toast.info i {
+        color: rgb(87, 202, 248);
+    }
+
+    .toast.warning i {
+        color: orange;
+    }
+
+    .toast::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 5px;
+        background: green;
+        animation: anim 5s linear forwards;
+    }
+
+    @keyframes anim {
+        100% {
+            width: 0;
+        }
+    }
+
+    .toast.error::after {
+        background: red;
+    }
+
+    .toast.info::after {
+        background: rgb(87, 202, 248);
+    }
+
+    .toast.warning::after {
+        background: orange;
+    }
+</style>
+<script>
+    let toastBox = document.getElementById('toastBox');
+    let message = document.getElementById('msg');
+
+    function showToast() {
+        let toast = document.createElement('div');
+        toast.classList.add('toast');
+        toast.innerHTML = message.innerHTML;
+        toastBox.appendChild(toast);
+
+        if (message.className == 'msg-error') {
+            toast.classList.add('error');
+        }
+        if (message.className == 'msg-info') {
+            toast.classList.add('info');
+        }
+        if (message.className == 'msg-warning') {
+            toast.classList.add('warning');
+        }
+
+        setTimeout(() => {
+            toast.remove();
+        }, 5000);
+    }
+
+    showToast();
+</script>
