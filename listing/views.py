@@ -187,6 +187,7 @@ def delete_property(request, id):
     messages.info(request, 'Delete property successfully!')
     return redirect('manage_listing')
 
+@login_required
 def review_listing(request):
     if request.method == 'POST':
         user = request.user

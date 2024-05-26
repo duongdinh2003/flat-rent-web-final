@@ -82,7 +82,11 @@ WSGI_APPLICATION = 'flat_rent_web.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {},
+    'default': {
+        'TEST': {
+            'DEPENDENCIES': ['user', 'listing'],
+        },
+    },
     "users": {
         "NAME": "user_data",
         "ENGINE": "django.db.backends.mysql",
@@ -90,6 +94,10 @@ DATABASES = {
         "PASSWORD": os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
+        'TEST': {
+            'NAME': 'test_user_data',
+            'DEPENDENCIES': [],
+        },
     },
     "listings": {
         "NAME": "listing_data",
@@ -98,6 +106,10 @@ DATABASES = {
         "PASSWORD": os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
+        'TEST': {
+            'NAME': 'test_listing_data',
+            'DEPENDENCIES': [],
+        },
     },
 }
 
